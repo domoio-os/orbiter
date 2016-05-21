@@ -5,10 +5,10 @@ defmodule Orbiter do
   # for more information on OTP Applications
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
-
     children = [
-      # Define workers and child supervisors to be supervised
-      # worker(Orbiter.Worker, [arg1, arg2, arg3]),
+      supervisor(Task.Supervisor, [[name: Orbiter.TaskSupervisor]]),
+      worker(Orbiter.Config, []),
+      worker(Orbiter.ConnectionManager, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

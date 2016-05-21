@@ -1,0 +1,6 @@
+%{"espec": {:hex, :espec, "0.8.18"},
+  "exlager": {:git, "https://github.com/khia/exlager.git", "84f3baf2cfdb0b4f77645df12a138b7962bb581a", []},
+  "goldrush": {:git, "git://github.com/DeadZen/goldrush.git", "212299233c7e7eb63a97be2777e1c05ebaa58dbe", [tag: "0.1.8"]},
+  "lager": {:git, "https://github.com/basho/lager.git", "45fe95ba6cd964b7a667394c4e671a5afe8f5a42", []},
+  "meck": {:hex, :meck, "0.8.4"},
+  "msgpack": {:hex, :msgpack, "0.5.0"}}

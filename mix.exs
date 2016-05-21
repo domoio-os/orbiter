@@ -14,7 +14,7 @@ defmodule Orbiter.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger],
+    [applications: [:lager],
      mod: {Orbiter, []}]
   end
 
@@ -28,6 +28,11 @@ defmodule Orbiter.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:lager, github: "basho/lager"},
+      {:exlager, github: "khia/exlager"},
+      {:msgpack, "~> 0.5.0"}
+    ]
+
   end
 end

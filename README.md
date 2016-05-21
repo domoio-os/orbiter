@@ -4,17 +4,7 @@
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
-  1. Add orbiter to your list of dependencies in `mix.exs`:
-
-        def deps do
-          [{:orbiter, "~> 0.0.1"}]
-        end
-
-  2. Ensure orbiter is started before your application:
-
-        def application do
-          [applications: [:orbiter]]
-        end
-
+Generate the keys for the orbiter
+         cd /etc/domoio/certs/orbiter
+         openssl genrsa -out orbiter.pem 2048
+         openssl rsa -in orbiter.pem -outform PEM -pubout -out orbiter.pub.pem

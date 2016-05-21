@@ -4,3 +4,5 @@
 erl_crash.dump
 *.ez
 config/config.exs
+/log
+/tmp
