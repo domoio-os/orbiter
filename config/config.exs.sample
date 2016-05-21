@@ -1,0 +1,14 @@
+use Mix.Config
+
+# Path to the user config file,
+config :orbiter, config_file: "/etc/orbiter/config.exs"
+
+# Path to the directory containing the rsa keys
+config :orbiter, certs_root: "/etc/orbiter/certs"
+
+
+
+# If you want to run the tests, you must create certs for the server
+if Mix.env == :test do
+  config :orbiter, server_certs_root: "/tmp/server_certs_root"
+end
