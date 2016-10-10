@@ -10,29 +10,51 @@ defmodule Orbiter.Mixfile do
      deps: deps]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type "mix help compile.app" for more information
+
   def application do
-    [applications: [:lager],
+    [applications: apps,
      mod: {Orbiter, []}]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
+    case :os.type do
+      {:unix, :linux} -> global_deps ++ linux_deps
+      _other -> global_deps
+    end
+  end
+
+  defp apps do
+    case :os.type do
+      {:unix, :linux} -> global_apps ++ linux_apps
+      _other -> global_apps
+    end
+  end
+
+  # Dependencies
+  #----------------------------------------------------------------------
+
+  defp global_deps do
     [
       {:lager, github: "basho/lager"},
       {:exlager, github: "khia/exlager"},
-      {:msgpack, "~> 0.5.0"}
+      {:extruder, github: "eloy/extruder"},
+      {:msgpack, "~> 0.5.0"},
+      {:exrm, git: "https://github.com/bitwalker/exrm.git"}
     ]
-
   end
+
+  defp global_apps do
+    [:lager, :extruder]
+  end
+
+
+  defp linux_deps do
+    [{:elixir_ale, "~> 0.5.5"}]
+  end
+
+  defp linux_apps do
+    [:elixir_ale]
+  end
+
+
 end

@@ -4,7 +4,7 @@ defmodule Orbiter.ConnectionManager do
   import Supervisor.Spec
 
   defmodule ConnectionState do
-    defstruct connection: nil, last_error: nil
+    defstruct driver: nil, connection: nil, last_error: nil, device: nil, ports: %{}
   end
 
   @server_name ConnectionManager
@@ -17,12 +17,19 @@ defmodule Orbiter.ConnectionManager do
     GenServer.call(@server_name, {:send_msg, msg})
   end
 
+  def connected(device) do
+    GenServer.call(@server_name, {:connected, device})
+  end
+
   # callbacks
   #----------------------------------------------------------------------
 
   def init(:ok) do
     {:ok, connection} = connect()
-    {:ok, %ConnectionState{connection: connection} }
+
+    # Get the default driver
+    driver = Application.get_env(:orbiter, :driver)
+    {:ok, %ConnectionState{connection: connection, driver: driver} }
   end
 
   defp connect() do
@@ -34,6 +41,18 @@ defmodule Orbiter.ConnectionManager do
   def handle_call({:send_msg, msg}, _from, state) do
     send(state.connection, {:send_msg, msg})
     {:reply, :ok, state}
+  end
+
+  def handle_call({:connected, device}, _from, state) do
+    ports = build_ports(device, state)
+    state = %{state | device: device}
+    {:reply, :ok, state}
+  end
+
+  def build_ports(device, state) do
+    Enum.reduce device.ports, %{}, fn(port, ports) ->
+      {:ok, pid} = state.driver.setup_port port
+    end
   end
 
   # Events handling
@@ -55,9 +74,9 @@ defmodule Orbiter.ConnectionManager do
     Lager.info "Connection down ~p [~p]", [reason, state.last_error]
     case state.last_error do
       :connection_error ->
-        Process.send_after self(), :reconnect, 5000
+        Process.send_after self(), :reconnect, 10000
       nil ->
-        Process.send_after self(), :reconnect, 1000
+        Process.send_after self(), :reconnect, 5000
     end
     state = %{state | connection: nil}
     {:noreply, state}

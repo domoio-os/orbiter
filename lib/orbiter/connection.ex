@@ -31,8 +31,12 @@ defmodule Orbiter.Connection do
 
 
   defp handsake(socket) do
-    :ssl.send(socket, Orbiter.Config.get :hardware_id)
-    private_key = RSA.load_key("#{Application.get_env(:orbiter, :certs_root)}/orbiter.pem")
+    {:ok, device_id} = Orbiter.Config.device_id
+    :ssl.send(socket, device_id)
+
+    config_dir = Application.get_env(:orbiter, :config_dir)
+    private_file = "#{config_dir}/certs/orbiter.pem"
+    private_key = RSA.load_key(private_file)
     {:ok, crypted_nounce} = :ssl.recv(socket, 0)
     nounce = RSA.decrypt(crypted_nounce, {:private, private_key})
     :ssl.send(socket, nounce)
@@ -50,8 +54,9 @@ defmodule Orbiter.Connection do
 
   defp loop(socket, manager) do
     receive do
-      {:ssl, _socket, data} ->
-        Lager.info "Received: ~p", [data]
+      {:ssl, _socket, packed_data} ->
+        {:ok, data} = :msgpack.unpack packed_data
+        route(data)
         loop(socket, manager)
       {:ssl_closed, _} ->
         Lager.info "Disconnected"
@@ -67,4 +72,16 @@ defmodule Orbiter.Connection do
   end
 
 
+  def route(%{"t" => type, "d" => data}) do
+    route(type, data)
+  end
+
+  def route("hello", data) do
+    device = Orbiter.Device.extrude! data
+    Orbiter.ConnectionManager.connected(device)
+  end
+
+  def route(command, data) do
+    Lager.info "Invalid message: ~p => ~p", [command, data]
+  end
 end
