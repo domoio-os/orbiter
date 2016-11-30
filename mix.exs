@@ -38,13 +38,17 @@ defmodule Orbiter.Mixfile do
       {:lager, github: "basho/lager"},
       {:exlager, github: "khia/exlager"},
       {:extruder, github: "eloy/extruder"},
+      {:poison, "~> 1.5"},
       {:msgpack, "~> 0.5.0"},
-      {:exrm, git: "https://github.com/bitwalker/exrm.git"}
+      {:hexate,  ">= 0.5.0"},
+      {:uuid, "~> 1.1" },
+      {:cowboy, "~> 1.0.4"},
+      {:plug, "~> 1.2.2"}
     ]
   end
 
   defp global_apps do
-    [:lager, :extruder]
+    [:lager, :extruder, :cowboy, :plug]
   end
 
 

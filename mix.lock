@@ -1,5 +1,7 @@
 %{"bbmustache": {:hex, :bbmustache, "1.0.4", "7ba94f971c5afd7b6617918a4bb74705e36cab36eb84b19b6a1b7ee06427aa38", [:rebar], []},
   "cf": {:hex, :cf, "0.2.1", "69d0b1349fd4d7d4dc55b7f407d29d7a840bf9a1ef5af529f1ebe0ce153fc2ab", [:rebar3], []},
+  "cowboy": {:hex, :cowboy, "1.0.4", "a324a8df9f2316c833a470d918aaf73ae894278b8aa6226ce7a9bf699388f878", [:make, :rebar], [{:cowlib, "~> 1.0.0", [hex: :cowlib, optional: false]}, {:ranch, "~> 1.0", [hex: :ranch, optional: false]}]},
+  "cowlib": {:hex, :cowlib, "1.0.2", "9d769a1d062c9c3ac753096f868ca121e2730b9a377de23dec0f7e08b1df84ee", [:make], []},
   "erlware_commons": {:hex, :erlware_commons, "0.19.0", "7b43caf2c91950c5f60dc20451e3c3afba44d3d4f7f27bcdc52469285a5a3e70", [:rebar3], [{:cf, "0.2.1", [hex: :cf, optional: false]}]},
   "espec": {:hex, :espec, "0.8.18"},
   "exlager": {:git, "https://github.com/khia/exlager.git", "84f3baf2cfdb0b4f77645df12a138b7962bb581a", []},
@@ -7,8 +9,14 @@
   "extruder": {:git, "https://github.com/eloy/extruder.git", "82956dc0251bd1e4ef5b8a5619c674222f5c74ca", []},
   "getopt": {:hex, :getopt, "0.8.2", "b17556db683000ba50370b16c0619df1337e7af7ecbf7d64fbf8d1d6bce3109b", [:rebar], []},
   "goldrush": {:git, "git://github.com/DeadZen/goldrush.git", "212299233c7e7eb63a97be2777e1c05ebaa58dbe", [tag: "0.1.8"]},
+  "hexate": {:hex, :hexate, "0.6.1", "1cea42e462c1daa32223127d4752e71016c3d933d492b9bb7fa4709a4a0fd50d", [:mix], []},
   "lager": {:git, "https://github.com/basho/lager.git", "45fe95ba6cd964b7a667394c4e671a5afe8f5a42", []},
   "meck": {:hex, :meck, "0.8.4"},
+  "mime": {:hex, :mime, "1.0.1", "05c393850524767d13a53627df71beeebb016205eb43bfbd92d14d24ec7a1b51", [:mix], []},
   "msgpack": {:hex, :msgpack, "0.5.0", "05e87ba33ef98109ffb408c6bf4acfa892fccb1b6054bb52233bef1537e38a33", [:rebar3], []},
+  "plug": {:hex, :plug, "1.2.2", "cfbda521b54c92ab8ddffb173fbaabed8d8fc94bec07cd9bb58a84c1c501b0bd", [:mix], [{:cowboy, "~> 1.0", [hex: :cowboy, optional: true]}, {:mime, "~> 1.0", [hex: :mime, optional: false]}]},
+  "poison": {:hex, :poison, "1.5.2", "560bdfb7449e3ddd23a096929fb9fc2122f709bcc758b2d5d5a5c7d0ea848910", [:mix], []},
   "providers": {:hex, :providers, "1.6.0", "db0e2f9043ae60c0155205fcd238d68516331d0e5146155e33d1e79dc452964a", [:rebar3], [{:getopt, "0.8.2", [hex: :getopt, optional: false]}]},
-  "relx": {:hex, :relx, "3.19.0", "286dd5244b4786f56aac75d5c8e2d1fb4cfd306810d4ec8548f3ae1b3aadb8f7", [:rebar3], [{:bbmustache, "1.0.4", [hex: :bbmustache, optional: false]}, {:cf, "0.2.1", [hex: :cf, optional: false]}, {:erlware_commons, "0.19.0", [hex: :erlware_commons, optional: false]}, {:getopt, "0.8.2", [hex: :getopt, optional: false]}, {:providers, "1.6.0", [hex: :providers, optional: false]}]}}
+  "ranch": {:hex, :ranch, "1.2.1", "a6fb992c10f2187b46ffd17ce398ddf8a54f691b81768f9ef5f461ea7e28c762", [:make], []},
+  "relx": {:hex, :relx, "3.19.0", "286dd5244b4786f56aac75d5c8e2d1fb4cfd306810d4ec8548f3ae1b3aadb8f7", [:rebar3], [{:bbmustache, "1.0.4", [hex: :bbmustache, optional: false]}, {:cf, "0.2.1", [hex: :cf, optional: false]}, {:erlware_commons, "0.19.0", [hex: :erlware_commons, optional: false]}, {:getopt, "0.8.2", [hex: :getopt, optional: false]}, {:providers, "1.6.0", [hex: :providers, optional: false]}]},
+  "uuid": {:hex, :uuid, "1.1.5", "96cb36d86ee82f912efea4d50464a5df606bf3f1163d6bdbb302d98474969369", [:mix], []}}

@@ -1,8 +1,18 @@
 defmodule Orbiter.Config do
   require Lager
   use GenServer
+  use Extruder
+
 
   @server_name Orbiter.Config
+  @config_dir Application.get_env(:orbiter, :config_dir)
+  @config_file "#{@config_dir}/config"
+
+
+  defmodel do
+    field :hardware_id, :string
+    field :secret, :string
+  end
 
   def start_link() do
     GenServer.start_link(__MODULE__, :ok, name: @server_name)
@@ -12,35 +22,16 @@ defmodule Orbiter.Config do
     GenServer.call @server_name, {:get, key}
   end
 
-  def public_key do
-    config_dir = Application.get_env(:orbiter, :config_dir)
-    public_file = "#{config_dir}/certs/orbiter.pub.pem"
-
-    case File.read(public_file) do
-      {:ok, content} -> {:ok, content}
-      {:error, error} -> raise "Error :#{error} loading public key #{public_file}"
-    end
-
+  def set(key, value) do
+    GenServer.call @server_name, {:set, key, value}
   end
 
-  def device_id_file do
-    config_dir = Application.get_env(:orbiter, :config_dir)
-    "#{config_dir}/device_id"
+  def all() do
+    GenServer.call @server_name, :all
   end
 
-  def device_id do
-    case File.read(device_id_file) do
-      {:ok, content} -> {:ok, String.rstrip(content)}
-      {:error, error} -> raise "Error :#{error} loading device id #{device_id_file}"
-    end
-  end
-
-
-  def set_device_id(device_id) do
-    case File.write(device_id_file, device_id, [:write]) do
-      :ok -> :ok
-      {:error, error} -> raise "Error :#{error} writing device file #{device_id_file}"
-    end
+  def set_encrypted_password(password) do
+    GenServer.call @server_name, :public_key
   end
 
   # callbacks
@@ -52,13 +43,40 @@ defmodule Orbiter.Config do
   end
 
   def handle_call({:get, key}, _from, config) do
-    value = config[key]
+    value = Map.fetch! config, key
     {:reply, value, config}
   end
 
-  defp read_config do
-    config_dir = Application.get_env(:orbiter, :config_dir)
-    config = Mix.Config.read! "#{config_dir}/config.exs"
-    config[:orbiter]
+  def handle_call({:set, key, value}, _from, config) do
+    config = Map.put config, key, value
+    :ok = save_config(config)
+    {:reply, value, config}
   end
+
+  def handle_call(:all, _from, config) do
+    {:reply, config, config}
+  end
+
+  defp read_config do
+    case File.read @config_file do
+      {:ok, content} -> Poison.decode!(content) |> Orbiter.Config.extrude!
+      {:error, _} -> create_config
+    end
+  end
+
+  defp create_config do
+    hardware_id = UUID.uuid4()
+    initial_config = %Orbiter.Config{hardware_id: hardware_id}
+    save_config(initial_config)
+    initial_config
+  end
+
+  defp save_config(config) do
+    json = Poison.encode! config
+    case File.write(@config_file, json, [:write]) do
+      :ok -> :ok
+      {:error, error} -> raise "Error :#{error} writing config file #{@config_file}"
+    end
+  end
+
 end

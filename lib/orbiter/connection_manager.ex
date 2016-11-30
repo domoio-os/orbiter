@@ -21,6 +21,10 @@ defmodule Orbiter.ConnectionManager do
     GenServer.call(@server_name, {:connected, device})
   end
 
+  def state() do
+    GenServer.call(@server_name, :get_state)
+  end
+
   # callbacks
   #----------------------------------------------------------------------
 
@@ -29,7 +33,8 @@ defmodule Orbiter.ConnectionManager do
 
     # Get the default driver
     driver = Application.get_env(:orbiter, :driver)
-    {:ok, %ConnectionState{connection: connection, driver: driver} }
+    state = %ConnectionState{ driver: driver }
+    {:ok, state}
   end
 
   defp connect() do
@@ -37,6 +42,12 @@ defmodule Orbiter.ConnectionManager do
     Process.monitor(pid)
     {:ok, pid}
   end
+
+  def handle_call(:get_state, _from, state) do
+    connected = state.connection != nil
+    {:reply, %{connected: connected, configured: false}, state}
+  end
+
 
   def handle_call({:send_msg, msg}, _from, state) do
     send(state.connection, {:send_msg, msg})

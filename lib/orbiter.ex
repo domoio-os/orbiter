@@ -8,7 +8,9 @@ defmodule Orbiter do
     children = [
       supervisor(Task.Supervisor, [[name: Orbiter.TaskSupervisor]]),
       worker(Orbiter.Config, []),
-      worker(Orbiter.ConnectionManager, [])
+      worker(Orbiter.PublicKey, []),
+      worker(Orbiter.ConnectionManager, []),
+      Plug.Adapters.Cowboy.child_spec(:http, Orbiter.Web, [], [dispatch: Orbiter.Web.dispatch, port: 8080])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
