@@ -4,7 +4,7 @@ defmodule Orbiter.ConnectionManager do
   import Supervisor.Spec
 
   defmodule ConnectionState do
-    defstruct driver: nil, connection: nil, last_error: nil, device: nil, ports: %{}
+    defstruct connected: false, connection: nil, last_error: nil
   end
 
   @server_name ConnectionManager
@@ -17,8 +17,8 @@ defmodule Orbiter.ConnectionManager do
     GenServer.call(@server_name, {:send_msg, msg})
   end
 
-  def connected(device) do
-    GenServer.call(@server_name, {:connected, device})
+  def connected do
+    GenServer.call(@server_name, :connected)
   end
 
   def state() do
@@ -30,10 +30,7 @@ defmodule Orbiter.ConnectionManager do
 
   def init(:ok) do
     {:ok, connection} = connect()
-
-    # Get the default driver
-    driver = Application.get_env(:orbiter, :driver)
-    state = %ConnectionState{ driver: driver }
+    state = %ConnectionState{}
     {:ok, state}
   end
 
@@ -54,17 +51,11 @@ defmodule Orbiter.ConnectionManager do
     {:reply, :ok, state}
   end
 
-  def handle_call({:connected, device}, _from, state) do
-    ports = build_ports(device, state)
-    state = %{state | device: device}
+  def handle_call(:connected, _from, state) do
+    state = %{state | connected: true}
     {:reply, :ok, state}
   end
 
-  def build_ports(device, state) do
-    Enum.reduce device.ports, %{}, fn(port, ports) ->
-      {:ok, pid} = state.driver.setup_port port
-    end
-  end
 
   # Events handling
   #----------------------------------------------------------------------

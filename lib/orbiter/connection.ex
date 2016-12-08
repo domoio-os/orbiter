@@ -1,7 +1,7 @@
 defmodule Orbiter.Connection do
   require Lager
 
-  alias Orbiter.{Config}
+  alias Orbiter.{Config, ConnectionManager, DeviceState}
 
   @server Application.get_env(:orbiter, :server)
   @port Application.get_env(:orbiter, :port)
@@ -96,8 +96,14 @@ defmodule Orbiter.Connection do
 
   def route("hello", data) do
     device = Orbiter.Device.extrude! data
-    Orbiter.ConnectionManager.connected(device)
+    DeviceState.init_device device
+    ConnectionManager.connected
   end
+
+  def route("command", %{"action" => "set", "device_id" => device_id, "port_id" => port_id, "value" => value}) do
+    DeviceState.set_port device_id, port_id, value
+  end
+
 
   def route(command, data) do
     Lager.info "Invalid message: ~p => ~p", [command, data]

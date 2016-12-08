@@ -9,6 +9,7 @@ defmodule Orbiter do
       supervisor(Task.Supervisor, [[name: Orbiter.TaskSupervisor]]),
       worker(Orbiter.Config, []),
       worker(Orbiter.PublicKey, []),
+      worker(Orbiter.DeviceState, []),
       worker(Orbiter.ConnectionManager, []),
       Plug.Adapters.Cowboy.child_spec(:http, Orbiter.Web, [], [dispatch: Orbiter.Web.dispatch, port: 8080])
     ]
