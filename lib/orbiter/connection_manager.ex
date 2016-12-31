@@ -25,19 +25,30 @@ defmodule Orbiter.ConnectionManager do
     GenServer.call(@server_name, :get_state)
   end
 
+  def start_connection() do
+    GenServer.call(@server_name, :start_connection)
+  end
+
   # callbacks
   #----------------------------------------------------------------------
 
   def init(:ok) do
-    {:ok, connection} = connect()
     state = %ConnectionState{}
+    state = start_connection(state)
     {:ok, state}
   end
 
-  defp connect() do
+  defp start_connection(state) do
+    case Orbiter.Config.get(:hardware_id) do
+      nil -> state
+      hardware_id -> connect(state)
+    end
+  end
+
+  defp connect(state) do
     {:ok, pid} = Task.Supervisor.start_child(Orbiter.TaskSupervisor, Orbiter.Connection, :start, [self()])
     Process.monitor(pid)
-    {:ok, pid}
+    state = %ConnectionState{connection: pid}
   end
 
   def handle_call(:get_state, _from, state) do
@@ -45,6 +56,10 @@ defmodule Orbiter.ConnectionManager do
     {:reply, %{connected: connected, configured: false}, state}
   end
 
+  def handle_call(:start_connection, _from, state) do
+    state = start_connection(state)
+    {:reply, :ok, state}
+  end
 
   def handle_call({:send_msg, msg}, _from, state) do
     send(state.connection, {:send_msg, msg})
@@ -61,8 +76,7 @@ defmodule Orbiter.ConnectionManager do
   #----------------------------------------------------------------------
 
   def handle_info(:reconnect, state) do
-    {:ok, connection} = connect()
-    state = %ConnectionState{connection: connection}
+    state = connect(state)
     {:noreply, state}
   end
 

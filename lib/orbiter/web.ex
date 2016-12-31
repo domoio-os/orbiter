@@ -33,7 +33,6 @@ defmodule Orbiter.Web do
   end
 
   get "/api/auth_request" do
-    :ok = PublicKey.generate_keys
     public_key = Hexate.encode PublicKey.public_key_der
     hardware_id = Config.get :hardware_id
     json conn, %{public_key: public_key, hardware_id: hardware_id}
@@ -41,9 +40,9 @@ defmodule Orbiter.Web do
 
   post "/auth_reply" do
     conn = fetch_query_params(conn)
-    %{"secret" => secret} = conn.params
-    clean_secret= PublicKey.decrypt Hexate.decode(secret)
-    Config.set :secret, clean_secret
+    %{"hardware_id" => hardware_id} = conn.params
+    Config.set :hardware_id, hardware_id
+    Orbiter.ConnectionManager.start_connection
     json(conn, %{done: true})
   end
 

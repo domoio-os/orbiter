@@ -3,15 +3,12 @@ defmodule Orbiter.Config do
   use GenServer
   use Extruder
 
-
   @server_name Orbiter.Config
   @config_dir Application.get_env(:orbiter, :config_dir)
   @config_file "#{@config_dir}/config"
 
-
   defmodel do
     field :hardware_id, :string
-    field :secret, :string
   end
 
   def start_link() do
@@ -28,10 +25,6 @@ defmodule Orbiter.Config do
 
   def all() do
     GenServer.call @server_name, :all
-  end
-
-  def set_encrypted_password(password) do
-    GenServer.call @server_name, :public_key
   end
 
   # callbacks
@@ -65,8 +58,7 @@ defmodule Orbiter.Config do
   end
 
   defp create_config do
-    hardware_id = UUID.uuid4()
-    initial_config = %Orbiter.Config{hardware_id: hardware_id}
+    initial_config = %Orbiter.Config{}
     save_config(initial_config)
     initial_config
   end

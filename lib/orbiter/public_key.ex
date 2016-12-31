@@ -1,62 +1,40 @@
 defmodule Orbiter.PublicKey do
-  use GenServer
 
-  @server_name :public_key
-
-  # Client API
-  def start_link() do
-    GenServer.start_link(__MODULE__, :ok, name: @server_name)
-  end
-
+  @config_dir Application.get_env(:orbiter, :config_dir)
+  @cert_file "#{@config_dir}/private_key.pem"
 
   def encrypt(plaintext) do
-    GenServer.call @server_name, {:encrypt, plaintext}
+    {public_key, _} = read_keys()
+    cyphertext = :public_key.encrypt_public plaintext, public_key
+    cyphertext
   end
 
   def decrypt(cyphertext) do
-    GenServer.call @server_name, {:decrypt, cyphertext}
+    {_public_key, private_key} = read_keys()
+    plaintext = :public_key.decrypt_private cyphertext, private_key
+    plaintext
   end
 
   def public_key_der do
-    GenServer.call @server_name, :public_key_der
-  end
-
-  def generate_keys do
-    GenServer.call @server_name, :generate_keys
-  end
-
-  # Callbacks
-  #----------------------------------------------------------------------
-
-  def init(:ok) do
-    {:ok, false}
-  end
-
-  def handle_call(:public_key_der, _from, {public_key, private_key}) do
+    {public_key, _} = read_keys()
     der = :public_key.der_encode :RSAPublicKey, public_key
-    {:reply, der, {public_key, private_key}}
+    der
   end
 
-  def handle_call(:generate_keys, _from, _old_keys) do
-    {public_key, private_key} = generate_rsa()
-    {:reply, :ok, {public_key, private_key}}
-  end
-
-  def handle_call({:decrypt, cyphertext}, _from, {public_key, private_key}) do
-    plaintext = :public_key.decrypt_private cyphertext, private_key
-    {:reply, plaintext, {public_key, private_key}}
-  end
-
-  def handle_call({:encrypt, plaintext}, _from, {public_key, private_key}) do
-    cyphertext = :public_key.encrypt_public plaintext, public_key
-    {:reply, cyphertext, {public_key, private_key}}
-  end
-
-  def generate_rsa() do
-    {pem, 0} = System.cmd "openssl", ["genrsa","2048"]
+  defp read_keys do
+    unless File.exists? @cert_file do
+      create_cert
+    end
+    {:ok, pem} = File.read @cert_file
     private_key = :public_key.pem_decode(pem) |> List.first |> :public_key.pem_entry_decode
     {:RSAPrivateKey, :'two-prime', n , e, d, _p, _q, _e1, _e2, _c, _other} = private_key
     public_key = {:RSAPublicKey, n, e}
     {public_key, private_key}
   end
+
+  defp create_cert do
+    {"", 0} = System.cmd "openssl", ["genrsa","-out", @cert_file, "2048"]
+    :ok
+  end
+
 end
