@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import {Provider} from 'react-redux'
 import {buildStore, dispatch} from './reducers'
-import Navigator from './components/navigator'
+import Dashboard from './components/dashboard'
 
 let store = buildStore()
 
@@ -12,7 +12,7 @@ let store = buildStore()
  * -------------------------------------------------------------------*/
 
 ReactDOM.render(
-  <Provider store={store}>{Navigator.route(store.getState())}</Provider>
+  <Provider store={store}><Dashboard /></Provider>
     ,document.getElementById('app')
 );
 
@@ -23,9 +23,9 @@ ReactDOM.render(
 
 fetch("/api/state")
   .then((resp) => {
-
     return resp.json()
   })
   .then((state) => {
+    console.log(state)
     dispatch("SET_STATE", {state})
   })

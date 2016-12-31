@@ -43,7 +43,7 @@ defmodule Orbiter.Web do
     %{"hardware_id" => hardware_id} = conn.params
     Config.set :hardware_id, hardware_id
     Orbiter.ConnectionManager.start_connection
-    json(conn, %{done: true})
+    redirect(conn, to: "/") |> halt
   end
 
   def json(conn, content) do
@@ -52,5 +52,14 @@ defmodule Orbiter.Web do
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(200, json_content)
+  end
+
+  def redirect(conn, [to: url]) do
+    html = Plug.HTML.html_escape(url)
+    body = "<html><body>You are being <a href=\"#{html}\">redirected</a>.</body></html>"
+
+    conn
+    |> put_resp_header("location", url)
+    |> send_resp(conn.status || 302, body)
   end
 end

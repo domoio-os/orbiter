@@ -6,14 +6,14 @@ import {mapStateToProps} from '../reducers'
 export default {
   route: (store) => {
     let {state, config} = mapStateToProps(store)
+    console.log(state)
 
-    if (!state.configured) {
+    if (state.configured == false) {
+      console.log("auth", state.configured)
       return <Auth />
     }
 
-    if (true) {
-      return <Dashboard />
-    }
-    return null
+    console.log("dash", state.configured)
+    return <Dashboard />
   }
 }

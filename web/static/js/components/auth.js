@@ -21,7 +21,7 @@ let startOauth = () => {
 
 const Auth = ({components, devices}) => (
   <div>
-    <h1 className="page_header">Connect your device</h1>
+    <h1 className="page_header">Connect your device.</h1>
     <button onClick={() => startOauth()} className="btn btn-success btn-lg">Connect</button>
   </div>
 );
