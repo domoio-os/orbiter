@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import React, { PropTypes } from 'react';
 import {mapStateToProps} from '../reducers'
-import {domoioUrl} from "../network"
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -11,6 +10,7 @@ const mapDispatchToProps = (dispatch) => {
 
 let startOauth = () => {
   let redirect_uri = `${window.location.origin}/auth_reply`
+  let domoioUrl = document.querySelector("meta[name='domoio_url']").getAttribute("content");
   fetch("/api/auth_request")
     .then((resp) => resp.json())
     .then((data) => {

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-
+    <meta name="domoio_url" content="<%= domoio_url %>">
     <title>Hello Domoio Orbiter!</title>
     <link rel="stylesheet" href="/assets/css/app.css">
   </head>

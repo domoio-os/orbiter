@@ -19,10 +19,13 @@ defmodule Orbiter.Web do
      }]
   end
 
-  EEx.function_from_file :defp, :tmpl_home_index, "web/views/home/index.html.eex", []
+
+  @domoio_url Application.get_env(:orbiter, :domoio_url)
+
+  EEx.function_from_file :defp, :tmpl_home_index, "web/views/home/index.html.eex", [:domoio_url]
 
   get "/" do
-    page_contents = tmpl_home_index
+    page_contents = tmpl_home_index(@domoio_url)
     conn
     |> put_resp_content_type("text/html") |> send_resp(200, page_contents)
   end
