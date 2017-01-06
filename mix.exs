@@ -42,7 +42,8 @@ defmodule Orbiter.Mixfile do
       {:msgpack, "~> 0.5.0"},
       {:hexate,  ">= 0.5.0"},
       {:cowboy, "~> 1.0.4"},
-      {:plug, "~> 1.2.2"}
+      {:plug, "~> 1.2.2"},
+      {:distillery, "~> 0.9"}
     ]
   end
 
