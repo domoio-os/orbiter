@@ -48,7 +48,7 @@ defmodule Orbiter.Mixfile do
   end
 
   defp global_apps do
-    [:lager, :extruder, :cowboy, :plug, :hexate, :msgpack, :poison]
+    [:lager, :extruder, :cowboy, :plug, :public_key, :hexate, :msgpack, :poison]
   end
 
 
