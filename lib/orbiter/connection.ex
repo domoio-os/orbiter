@@ -53,24 +53,6 @@ defmodule Orbiter.Connection do
     end
   end
 
-
-  # defp handsake(socket) do
-  #   Lager.info "Starting handsake"
-  #   hardware_id = Config.get(:hardware_id)
-  #   secret = Config.get :secret
-  #   auth = :msgpack.pack %{hardware_id: hardware_id, secret: secret}
-  #   :ssl.send(socket, auth)
-  #   case :ssl.recv(socket, 0) do
-  #     {:ok, "HELLO"} ->
-  #       Lager.info "Device logged in"
-  #       :ssl.setopts(socket, [{:active, true}])
-  #       {:ok, socket}
-  #     {:error, reason} ->
-  #       Lager.error "Error connecting to server: ~p", [reason]
-  #       :error
-  #   end
-  # end
-
   defp send_msg(socket, msg) do
     Lager.info "Sending msg: ~p", [msg]
     packed = :msgpack.pack msg
