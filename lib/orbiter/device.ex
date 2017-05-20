@@ -6,11 +6,13 @@ defmodule Orbiter.Device do
 
     defmodel do
       field :id, :string
-      field :input, :boolean
-      field :digital, :boolean
+      field :io, :atom
+      field :type, :atom
       field :flow, :atom
       field :value, :int, default: 0
 
+      validates_inclussion_of :io, in: [:input, :output]
+      validates_inclussion_of :type, in: [:analogic, :digital]
       validates_inclussion_of :flow, in: [:push, :pull]
     end
   end

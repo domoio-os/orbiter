@@ -42,7 +42,12 @@ defmodule Orbiter.DeviceState do
         device.driver.set_port device.port_pids[port_id], value
         {:reply, :ok, devices}
     end
+  end
 
+
+  def handle_info({:gpio_interrupt, port, reason}, state) do
+    Lager.info "handle_info: [~p] [~p]", [port ,reason]
+    {:noreply, state}
   end
 
   defp find(device_id, states) do
