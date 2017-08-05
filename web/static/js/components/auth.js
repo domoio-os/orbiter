@@ -14,7 +14,7 @@ let startOauth = () => {
   fetch("/api/auth_request")
     .then((resp) => resp.json())
     .then((data) => {
-      let url = `${domoioUrl}/join?scope=orbiter&response_type=token&redirect_uri=${redirect_uri}&client_id=${data.hardware_id}&state=${data.public_key}`
+      let url = `${domoioUrl}/join?scope=orbiter&response_type=token&redirect_uri=${redirect_uri}&client_id=${data.device_id}&state=${data.public_key}`
       window.location = url
     })
 }

@@ -7,7 +7,7 @@ defmodule Orbiter.Drivers.Dummy do
   #----------------------------------------------------------------------
 
   def setup_port(device, port) do
-    IO.puts "configuring #{device.id}, #{inspect port}"
+    Lager.info "configuring #{device.id}, #{inspect port}"
     {:ok, self}
   end
 

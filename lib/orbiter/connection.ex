@@ -32,8 +32,8 @@ defmodule Orbiter.Connection do
 
 
   defp handsake(socket) do
-    hardware_id = Config.get(:hardware_id)
-    :ssl.send(socket, hardware_id)
+    device_id = Config.get(:device_id)
+    :ssl.send(socket, device_id)
 
     case :ssl.recv(socket, 0) do
       {:error, :closed} -> :error
@@ -63,6 +63,8 @@ defmodule Orbiter.Connection do
     receive do
       {:ssl, _socket, packed_data} ->
         {:ok, data} = :msgpack.unpack packed_data
+
+
         route(data)
         loop(socket, manager)
       {:ssl_closed, _} ->
@@ -83,13 +85,13 @@ defmodule Orbiter.Connection do
     route(type, data)
   end
 
-  def route("hello", data) do
+  def route(%{"action" => "hello", "device" => data}) do
     device = Orbiter.Device.extrude! data
     DeviceState.init_device device
     ConnectionManager.connected
   end
 
-  def route("command", %{"action" => "set", "device_id" => device_id, "port_id" => port_id, "value" => value}) do
+  def route(%{"action" => "set", "device_id" => device_id, "port_id" => port_id, "value" => value}) do
     DeviceState.set_port device_id, port_id, value
   end
 

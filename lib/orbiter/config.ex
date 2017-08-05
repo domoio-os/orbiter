@@ -8,6 +8,7 @@ defmodule Orbiter.Config do
   @config_file "#{@config_dir}/config"
 
   defmodel do
+    field :device_id, :string
     field :hardware_id, :string
   end
 

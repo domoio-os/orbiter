@@ -37,14 +37,15 @@ defmodule Orbiter.Web do
 
   get "/api/auth_request" do
     public_key = Hexate.encode PublicKey.public_key_der
-    hardware_id = Config.get :hardware_id
-    json conn, %{public_key: public_key, hardware_id: hardware_id}
+    device_id = Config.get :device_id
+    json conn, %{public_key: public_key, device_id: device_id}
   end
 
   post "/auth_reply" do
     conn = fetch_query_params(conn)
-    %{"hardware_id" => hardware_id} = conn.params
-    Config.set :hardware_id, hardware_id
+    IO.puts inspect(conn.params)
+    %{"device_id" => device_id} = conn.params
+    Config.set :device_id, device_id
     Orbiter.ConnectionManager.start_connection
     redirect(conn, to: "/") |> halt
   end
