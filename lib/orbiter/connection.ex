@@ -3,6 +3,8 @@ defmodule Orbiter.Connection do
 
   alias Orbiter.{Config, PublicKey, ConnectionManager, DeviceState}
 
+  defstruct manager: nil, last_seen: nil
+
   @server Application.get_env(:orbiter, :server)
   @port Application.get_env(:orbiter, :port)
 
@@ -15,7 +17,12 @@ defmodule Orbiter.Connection do
     case connect(manager) do
       :error -> :error
       {:ok, socket} ->
-        loop(socket, manager)
+        state = %__MODULE__{manager: manager}
+
+        state = set_last_seen(state)
+        check_connection_state(state)
+        watchdog_ping(socket)
+        loop(socket, state)
     end
   end
 
@@ -53,37 +60,66 @@ defmodule Orbiter.Connection do
     end
   end
 
-  defp send_msg(socket, msg) do
-    Lager.info "Sending msg: ~p", [msg]
-    packed = :msgpack.pack msg
+  defp send_msg(socket, {action, data}) do
+    packed = :msgpack.pack %{a: action, d: data}
     :ssl.send socket, packed
   end
 
-  defp loop(socket, manager) do
+  defp send_msg(socket, action) do
+    packed = :msgpack.pack %{a: action}
+    :ssl.send socket, packed
+  end
+
+  defp loop(socket, state) do
     receive do
       {:ssl, _socket, packed_data} ->
         {:ok, data} = :msgpack.unpack packed_data
-
-
         route(data)
-        loop(socket, manager)
+        state = set_last_seen(state)
+        loop(socket, state)
+      {:send_msg, msg} ->
+        send_msg(socket, msg)
+        loop(socket, state)
+      {:check_connection_state} ->
+        case check_connection_state(state) do
+          {:ok, state} -> loop(socket, state)
+          :timeout ->
+            Lager.info "Device timeout"
+        end
+      {:watchdog_ping} ->
+        watchdog_ping(socket)
+        loop(socket, state)
+
       {:ssl_closed, _} ->
         Lager.info "Disconnected"
       {:ssl_error, _} ->
         Lager.info "SSL Error"
-      {:send_msg, msg} ->
-        send_msg(socket, msg)
-        loop(socket, manager)
       other ->
         Lager.info "Received: ~p", [other]
-        loop(socket, manager)
+        loop(socket, state)
     end
   end
 
-
-  def route(%{"t" => type, "d" => data}) do
-    route(type, data)
+  defp set_last_seen(state) do
+    {_, seconds, _} = :os.timestamp()
+    %{state | last_seen: seconds}
   end
+
+  defp check_connection_state(state) do
+    {_, seconds, _} = :os.timestamp()
+    if (seconds < state.last_seen + 16) do
+      state_timer_pid = Process.send_after self(), {:check_connection_state}, 16000
+      {:ok, state}
+    else
+      :timeout
+    end
+  end
+
+  def watchdog_ping(socket) do
+    :ok = send_msg socket, :ping
+    Process.send_after self(), {:watchdog_ping}, 10000
+  end
+
 
   def route(%{"action" => "hello", "device" => data}) do
     device = Orbiter.Device.extrude! data
@@ -95,8 +131,11 @@ defmodule Orbiter.Connection do
     DeviceState.set_port device_id, port_id, value
   end
 
+  def route(%{"action" => "pong"}) do
+  end
 
-  def route(command, data) do
-    Lager.info "Invalid message: ~p => ~p", [command, data]
+
+  def route(command) do
+    Lager.info "Invalid message: ~p", [command]
   end
 end
