@@ -1,0 +1,14 @@
+[Unit]
+Description=Runner for Orbiter App
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/orbiter
+ExecStart=/opt/orbiter/bin/orbiter start
+ExecStop=/opt/orbiter/bin/orbiter stop
+User=orbiter
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+

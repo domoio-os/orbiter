@@ -1,0 +1,9 @@
+#!/bin/bash
+/usr/sbin/groupadd gpio
+/usr/sbin/useradd orbiter -r --gid gpio --home-dir /opt/orbiter -M
+/bin/chown -R orbiter /etc/orbiter
+/bin/mkdir /opt/orbiter/log
+/bin/chown orbiter /opt/orbiter/log
+/bin/mkdir /opt/orbiter/var
+/bin/chown orbiter /opt/orbiter/var
+

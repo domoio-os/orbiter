@@ -1,0 +1,10 @@
+Package: orbiter
+Priority: optional
+Section: net
+Maintainer: Domoio <info@domoio.com>
+Architecture: armhf
+Version: 0.0.1
+Provides: orbiter
+Description: Domoio Client
+ Domoio is a smart home system
+
