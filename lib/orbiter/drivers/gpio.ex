@@ -1,6 +1,5 @@
 defmodule Orbiter.Drivers.Gpio do
   @behaviour Orbiter.Driver
-  alias Orbiter.Device
   require Lager
 
 

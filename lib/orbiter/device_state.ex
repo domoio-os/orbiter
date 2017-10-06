@@ -2,8 +2,9 @@ defmodule Orbiter.DeviceState do
   use GenServer
 
   defstruct driver: nil, device: nil, port_pids: nil, driver: nil
-  require Lager
 
+  require Lager
+  alias Orbiter.Device
 
   @server_name :device_state
 
