@@ -1,9 +1,13 @@
 #!/bin/bash
-/usr/sbin/groupadd gpio
-/usr/sbin/useradd orbiter -r --gid gpio --home-dir /opt/orbiter -M
-/bin/chown -R orbiter /etc/orbiter
-/bin/mkdir /opt/orbiter/log
-/bin/chown orbiter /opt/orbiter/log
-/bin/mkdir /opt/orbiter/var
-/bin/chown orbiter /opt/orbiter/var
+USER=orbiter
 
+/usr/sbin/groupadd gpio
+/usr/sbin/useradd ${USER} -r --gid gpio --home-dir /opt/orbiter -M
+/bin/chown -R ${USER} /etc/orbiter
+/bin/mkdir /opt/orbiter/log
+/bin/chown ${USER} /opt/orbiter/log
+/bin/mkdir /opt/orbiter/var
+/bin/chown ${USER} /opt/orbiter/var
+/bin/mkdir /var/log/orbiter
+/bin/chown ${USER} /var/log/orbiter
+systemctl daemon-reload
