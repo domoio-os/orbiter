@@ -1,6 +1,9 @@
 defmodule Orbiter.Drivers.Gpio do
   @behaviour Orbiter.Driver
+  alias Orbiter.Device
   require Lager
+
+
   # port config
   #----------------------------------------------------------------------
 
@@ -21,13 +24,17 @@ defmodule Orbiter.Drivers.Gpio do
     Gpio.write(pid, value)
   end
 
-  def handle_info({:gpio_interrupt, port, reason}, state) do
-    Lager.info "handle_info: [~p] [~p]", [port ,reason]
+  def handle_info({:gpio_interrupt, port, :rising}, state) do
+    Lager.info "handle_info: [~p] UP", [port]
+    Device.change_port(port, 1)
     {:noreply, state}
   end
 
-  def handle_info(args, state) do
-    IO.puts "fooo #{inspect(args)}"
+
+  def handle_info({:gpio_interrupt, port, :falling}, state) do
+    Lager.info "handle_info: [~p] DOWN", [port]
+    Device.change_port(port, 0)
     {:noreply, state}
   end
+
 end

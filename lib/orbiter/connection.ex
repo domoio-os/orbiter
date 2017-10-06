@@ -60,13 +60,9 @@ defmodule Orbiter.Connection do
     end
   end
 
-  defp send_msg(socket, {action, data}) do
-    packed = :msgpack.pack %{a: action, d: data}
-    :ssl.send socket, packed
-  end
 
   defp send_msg(socket, action) do
-    packed = :msgpack.pack %{a: action}
+    packed = :msgpack.pack action
     :ssl.send socket, packed
   end
 
@@ -116,7 +112,7 @@ defmodule Orbiter.Connection do
   end
 
   def watchdog_ping(socket) do
-    :ok = send_msg socket, :ping
+    :ok = send_msg socket, %{action: :ping}
     Process.send_after self(), {:watchdog_ping}, 10000
   end
 
