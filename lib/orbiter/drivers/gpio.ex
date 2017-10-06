@@ -25,6 +25,7 @@ defmodule Orbiter.Drivers.Gpio do
   end
 
   def handle_info({:gpio_interrupt, port, :rising}, state) do
+    port = Integer.to_string(port)
     Lager.info "handle_info: [~p] UP", [port]
     Device.change_port(port, 1)
     {:noreply, state}
@@ -32,6 +33,7 @@ defmodule Orbiter.Drivers.Gpio do
 
 
   def handle_info({:gpio_interrupt, port, :falling}, state) do
+    port = Integer.to_string(port)
     Lager.info "handle_info: [~p] DOWN", [port]
     Device.change_port(port, 0)
     {:noreply, state}
