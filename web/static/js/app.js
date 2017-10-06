@@ -26,6 +26,5 @@ fetch("/api/state")
     return resp.json()
   })
   .then((state) => {
-    console.log(state)
     dispatch("SET_STATE", {state})
   })

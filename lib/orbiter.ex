@@ -1,6 +1,8 @@
 defmodule Orbiter do
   use Application
 
+  def version, do: "0.1.0"
+
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do

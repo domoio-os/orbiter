@@ -22,7 +22,7 @@ const Dashboard = ({state, config}) => {
 
   return (
     <div className="container">
-      <h1> Domoio Orbiter</h1>
+      <h1> Domoio Orbiter {state.version}</h1>
       {connection_state}
     </div>
   )

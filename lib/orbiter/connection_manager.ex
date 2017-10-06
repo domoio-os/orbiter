@@ -54,7 +54,7 @@ defmodule Orbiter.ConnectionManager do
   def handle_call(:get_state, _from, state) do
     connected = state.connection != nil
     configured = Orbiter.Config.get(:device_id) != nil
-    {:reply, %{connected: connected, configured: configured}, state}
+    {:reply, %{connected: connected, configured: configured, version: Orbiter.version}, state}
   end
 
   def handle_call(:start_connection, _from, state) do
